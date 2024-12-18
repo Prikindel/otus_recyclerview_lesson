@@ -12,11 +12,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity(), Listener {
-
-    private var adapter: ChatAdapter? = null
-
-    var list = generateList()
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,49 +24,6 @@ class MainActivity : AppCompatActivity(), Listener {
             insets
         }
 
-        val recyclerView = findViewById<RecyclerView>(R.id.list)
 
-        adapter = ChatAdapter(this)
-        recyclerView.adapter = adapter
-
-        adapter?.setItems(list)
-    }
-
-//    override fun onResume() {
-//        super.onResume()
-//        lifecycleScope.launch {
-//            delay(3000)
-//            adapter?.moved()
-//        }
-//    }
-
-    override fun onItemClicked(id: Int) {
-        Toast.makeText(this@MainActivity, "Clicked $id item", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onItemActionClicked(id: Int) {
-        adapter?.removeItem(id)
-    }
-
-    fun generateList() = run {
-        val list = mutableListOf<Item>()
-        repeat(40) {
-            if (it % 4 == 0) {
-                list.add(
-                    DayItem(it, "Day ${it / 4}")
-                )
-            } else {
-                val person = PersonItem(
-                    id = it,
-                    name = "Name $it",
-                    message = "This is message",
-                    date = "12:05",
-                    image = R.drawable.baseline_approval_24,
-                    background = if (it % 2 == 0) R.color.blue else R.color.green
-                )
-                list.add(person)
-            }
-        }
-        list.toList()
     }
 }
