@@ -3,6 +3,7 @@ package ru.prike.otus_recyclerview_lesson
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Collections
 
 class ChatAdapter(
     private val listener: Listener
@@ -76,6 +77,29 @@ class ChatAdapter(
         val startPosition = if (isDayEmpty) position - 1 else position
         val countRemove = if (isDayEmpty) 2 else 1
         notifyItemRangeRemoved(startPosition, countRemove)
+    }
+
+    fun changeBackground(index: Int, color: Int) {
+        list = list.toMutableList().also {
+            val item = (it[index] as? ChatItem)
+            it[index] = item?.copy(background = if (item.background != null) null else color) ?: it[index]
+//            it[index] = (it[index] as? ChatItem)?.copy(background = color) ?: it[index]
+        }.toList()
+
+        notifyItemChanged(index)
+    }
+
+    fun exchange(fromPosition: Int, toPosition: Int) {
+        if (fromPosition < toPosition) {
+            for (index in fromPosition until toPosition) {
+                Collections.swap(list, index, index + 1)
+            }
+        } else {
+            for (index in fromPosition downTo toPosition + 1) {
+                Collections.swap(list, index, index - 1)
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition)
     }
 
     fun moved() {

@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="6dp"
     android:padding="8dp"
-    android:background="#0CE4F8">
+    tools:background="#0CE4F8">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/image"

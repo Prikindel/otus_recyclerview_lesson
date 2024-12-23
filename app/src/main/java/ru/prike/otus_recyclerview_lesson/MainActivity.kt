@@ -4,16 +4,20 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), Listener {
 
-    private val adapter: ChatAdapter by lazy { ChatAdapter(this) }
+//    private val adapter: ChatAdapter by lazy { ChatAdapter(this) }
+private val adapter: ChatDiffAdapter by lazy { ChatDiffAdapter(this) }
 
     private var list: List<Item> = emptyList()
 
@@ -28,34 +32,57 @@ class MainActivity : AppCompatActivity(), Listener {
         }
 
         val recyclerView = findViewById<RecyclerView>(R.id.list)
+        recyclerView.addItemDecoration(
+            CustomDecorator()
+        )
+
+        ItemTouchHelper(ItemTouchCallback()).attachToRecyclerView(recyclerView)
+
+//        recyclerView.recycledViewPool.setMaxRecycledViews(
+//            ChatAdapter.ViewTypes.CHAT.id,
+//            10
+//        )
+//        recyclerView.setItemViewCacheSize(4)
 
         recyclerView.adapter = adapter
         list = generateList()
-        adapter.setData(list)
+        adapter.submitList(list)
     }
 
     override fun onResume() {
         super.onResume()
 
-//        lifecycleScope.launch {
-//            delay(1000)
-//            adapter.moved()
-//            delay(1000)
-//            adapter.moved()
-//            delay(1000)
-//            adapter.moved()
-//            delay(1000)
-//            adapter.moved()
-//        }
+        lifecycleScope.launch {
+            delay(1000)
+            moved()
+            delay(1000)
+            moved()
+            delay(1000)
+            moved()
+            delay(1000)
+            moved()
+        }
+    }
+
+    private fun moved() {
+        val item = list.get(1)
+        list = list.toMutableList().also {
+            it.remove(item)
+            it.add(5, item)
+        }.toList()
+        adapter.submitList(list)
     }
 
     override fun onItemClicked(id: Int) {
         Toast.makeText(this, "Clicked $id item", Toast.LENGTH_SHORT).show()
+//        adapter.changeBackground(id, android.R.color.holo_red_light)
     }
 
     override fun onItemActionClicked(id: Int) {
-//        list = list.filter { it.id != id }
-        adapter.removeItem(id)
+        val chatItem = list.find { (it as? ChatItem)?.id == id }
+        list = list.filter { chatItem != it }
+        adapter.submitList(list)
+//        adapter.removeItem(id)
     }
 
     fun generateList() = run {
@@ -71,7 +98,7 @@ class MainActivity : AppCompatActivity(), Listener {
                     name = "Name $it",
                     message = "This is message",
                     date = "12:05",
-                    background = if (it % 2 == 0) R.color.blue else R.color.green
+                    background = null
                 )
                 list.add(personItem)
             }

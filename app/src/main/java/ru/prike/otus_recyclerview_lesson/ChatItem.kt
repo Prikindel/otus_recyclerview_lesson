@@ -7,7 +7,7 @@ data class ChatItem(
     val name: String,
     val date: String,
     val message: String,
-    @ColorRes val background: Int
+    @ColorRes val background: Int?
 ) : Item
 
 data class DayItem(

@@ -11,6 +11,10 @@ class PersonViewHolder(
     private val listener: Listener,
 ) : RecyclerView.ViewHolder(view) {
 
+    init {
+        println(this)
+    }
+
     private val name: TextView by lazy { view.findViewById(R.id.name) }
     private val image: ImageView by lazy { view.findViewById(R.id.image) }
     private val message: TextView by lazy { view.findViewById(R.id.message) }
@@ -19,12 +23,14 @@ class PersonViewHolder(
     private val delete: View by lazy { view.findViewById(R.id.delete) }
 
     fun bind(item: ChatItem) {
+        println("bind item ${item.id}")
         name.text = item.name
         message.text = item.message
         date.text = item.date
         image.setImageResource(R.drawable.icon_phone_android_24)
 
-        root.setBackgroundResource(item.background)
+        if (item.background != null) root.setBackgroundResource(item.background)
+        else root.background = null
 
         root.setOnClickListener { listener.onItemClicked(item.id) }
         delete.setOnClickListener { listener.onItemActionClicked(item.id) }
