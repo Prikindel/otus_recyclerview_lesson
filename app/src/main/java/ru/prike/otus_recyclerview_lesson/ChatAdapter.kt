@@ -3,6 +3,7 @@ package ru.prike.otus_recyclerview_lesson
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Collections
 
 class ChatAdapter(
     private val listener: Listener
@@ -13,14 +14,16 @@ class ChatAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             ViewTypes.CHAT.id -> {
+                println("onCreateViewHolder CHAT")
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.person_item, parent, false)
                 PersonViewHolder(view, listener)
             }
             ViewTypes.DAY.id -> {
+                println("onCreateViewHolder DAY")
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.day_item, parent, false)
-                DayViewHolder(view)
+                DayViewHolder(view, listener)
             }
             else -> throw IllegalArgumentException("Not found view type for chat adapter")
         }
@@ -34,8 +37,14 @@ class ChatAdapter(
 //        }
 
         when (val item = list.getOrNull(position)) {
-            is ChatItem -> (holder as PersonViewHolder).bind(item)
-            is DayItem -> (holder as DayViewHolder).bind(item)
+            is ChatItem -> {
+                println("onBindViewHolder chat")
+                (holder as PersonViewHolder).bind(item)
+            }
+            is DayItem -> {
+                println("onBindViewHolder day")
+                (holder as DayViewHolder).bind(item)
+            }
         }
     }
 
@@ -43,8 +52,8 @@ class ChatAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when (list[position]) {
-            is ChatItem -> ViewTypes.CHAT.id
-            is DayItem -> ViewTypes.DAY.id
+            is ChatItem -> ViewTypes.CHAT.id // R.layout.person_item
+            is DayItem -> ViewTypes.DAY.id // R.layout.day_item
             else -> -1
         }
     }
@@ -82,8 +91,26 @@ class ChatAdapter(
         notifyItemMoved(1, 5)
     }
 
+    fun setData(newList: List<Item>, position: Int, addCount: Int) {
+        list = newList
+        notifyItemRangeInserted(position, addCount)
+    }
+
+    fun exchange(startPosition: Int, endPosition: Int) {
+       if (startPosition < endPosition) {
+           for (index in startPosition until endPosition) {
+               Collections.swap(list, index, index + 1)
+           }
+       } else {
+           for (index in endPosition until startPosition) {
+               Collections.swap(list, index, index - 1)
+           }
+       }
+        notifyItemMoved(startPosition, endPosition)
+    }
+
     enum class ViewTypes(val id: Int) {
-        DAY(0),
-        CHAT(1)
+        DAY(R.layout.day_item),
+        CHAT(R.layout.person_item)
     }
 }

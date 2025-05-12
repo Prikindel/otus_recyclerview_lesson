@@ -3,7 +3,7 @@ package ru.prike.otus_recyclerview_lesson
 import androidx.annotation.ColorRes
 
 data class ChatItem(
-    val id: Int,
+    override val id: Int,
     val name: String,
     val date: String,
     val message: String,
@@ -11,8 +11,10 @@ data class ChatItem(
 ) : Item
 
 data class DayItem(
-    val id: Int,
+    override val id: Int,
     val title: String
 ) : Item
 
-interface Item
+interface Item {
+    val id: Int
+}
