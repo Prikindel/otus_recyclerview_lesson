@@ -10,8 +10,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -51,6 +53,31 @@ class MainActivity : AppCompatActivity(), Listener {
         list = generateList()
 //        adapter.setData(list)
         adapter.submitList(list)
+
+        recyclerView.addOnScrollListener(object : OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+                val lstVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+
+//                println(
+//                    "Visible item count: $visibleItemCount\n" +
+//                            "Total item count: $totalItemCount\n" +
+//                            "First visible item position: $firstVisibleItemPosition\n" +
+//                            "Last visible item position: $lstVisibleItemPosition"
+//                )
+
+                if (lstVisibleItemPosition > totalItemCount - 4) {
+                    println("Added new items")
+                    list = list + generateList(totalItemCount)
+                    adapter.submitList(list)
+                }
+            }
+        })
     }
 
     override fun onResume() {
@@ -70,23 +97,23 @@ class MainActivity : AppCompatActivity(), Listener {
 
     override fun onItemClicked(id: Int) {
         Toast.makeText(this, "Clicked $id item", Toast.LENGTH_SHORT).show()
-        val item = list.find { (it as? DayItem)?.id == id } ?: return
-        val position = list.indexOfFirst { (it as? DayItem)?.id == id }
-        val list = mutableListOf<Item>()
-        repeat(10) {
-            val index = it + id
-            val personItem = ChatItem(
-                id = index,
-                name = "Name $index",
-                message = "This is message",
-                date = "12:05",
-                background = if (index % 2 == 0) R.color.blue else R.color.green
-            )
-            list.add(personItem)
-        }
-        this.list = this.list.toMutableList().apply{ addAll(position + 1, list.toList()) }
-
-        adapter.submitList(this.list)
+//        val item = list.find { (it as? DayItem)?.id == id } ?: return
+//        val position = list.indexOfFirst { (it as? DayItem)?.id == id }
+//        val list = mutableListOf<Item>()
+//        repeat(10) {
+//            val index = it + id
+//            val personItem = ChatItem(
+//                id = index,
+//                name = "Name $index",
+//                message = "This is message",
+//                date = "12:05",
+//                background = if (index % 2 == 0) R.color.blue else R.color.green
+//            )
+//            list.add(personItem)
+//        }
+//        this.list = this.list.toMutableList().apply{ addAll(position + 1, list.toList()) }
+//
+//        adapter.submitList(this.list)
     }
 
     override fun onItemActionClicked(id: Int) {
@@ -106,22 +133,22 @@ class MainActivity : AppCompatActivity(), Listener {
         adapter.submitList(list)
     }
 
-    fun generateList() = run {
+    fun generateList(startId: Int = 0) = run {
         val list = mutableListOf<Item>()
-        repeat(40) {
+        repeat(startId + 20) {
             if (it % 10 == 0) {
                 list.add(
                     DayItem(it, "Day ${it / 10}")
                 )
             } else {
-//                val personItem = ChatItem(
-//                    id = it,
-//                    name = "Name $it",
-//                    message = "This is message",
-//                    date = "12:05",
-//                    background = if (it % 2 == 0) R.color.blue else R.color.green
-//                )
-//                list.add(personItem)
+                val personItem = ChatItem(
+                    id = it,
+                    name = "Name $it",
+                    message = "This is message",
+                    date = "12:05",
+                    background = if (it % 2 == 0) R.color.blue else R.color.green
+                )
+                list.add(personItem)
             }
         }
 

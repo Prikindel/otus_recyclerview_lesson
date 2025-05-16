@@ -14,13 +14,13 @@ class ChatDiffAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             ViewTypes.CHAT.id -> {
-                println("onCreateViewHolder CHAT")
+//                println("onCreateViewHolder CHAT")
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.person_item, parent, false)
                 PersonViewHolder(view, listener)
             }
             ViewTypes.DAY.id -> {
-                println("onCreateViewHolder DAY")
+//                println("onCreateViewHolder DAY")
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.day_item, parent, false)
                 DayViewHolder(view, listener)
@@ -32,11 +32,11 @@ class ChatDiffAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = getItem(position)/*currentList.getOrNull(position)*/) {
             is ChatItem -> {
-                println("onBindViewHolder chat")
+//                println("onBindViewHolder chat")
                 (holder as PersonViewHolder).bind(item)
             }
             is DayItem -> {
-                println("onBindViewHolder day")
+//                println("onBindViewHolder day")
                 (holder as DayViewHolder).bind(item)
             }
         }

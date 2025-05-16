@@ -14,13 +14,13 @@ class ChatAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             ViewTypes.CHAT.id -> {
-                println("onCreateViewHolder CHAT")
+//                println("onCreateViewHolder CHAT")
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.person_item, parent, false)
                 PersonViewHolder(view, listener)
             }
             ViewTypes.DAY.id -> {
-                println("onCreateViewHolder DAY")
+//                println("onCreateViewHolder DAY")
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.day_item, parent, false)
                 DayViewHolder(view, listener)
@@ -38,11 +38,11 @@ class ChatAdapter(
 
         when (val item = list.getOrNull(position)) {
             is ChatItem -> {
-                println("onBindViewHolder chat")
+//                println("onBindViewHolder chat")
                 (holder as PersonViewHolder).bind(item)
             }
             is DayItem -> {
-                println("onBindViewHolder day")
+//                println("onBindViewHolder day")
                 (holder as DayViewHolder).bind(item)
             }
         }
