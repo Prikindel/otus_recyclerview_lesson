@@ -1,10 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
     tools:context=".MainActivity">
 
-</FrameLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Демонстрация списков в Android"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="32dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Выберите способ реализации списка:"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/btnLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="1. LinearLayout + ScrollView"
+        android:layout_marginBottom="8dp"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btnListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="2. ListView + BaseAdapter"
+        android:layout_marginBottom="8dp"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btnRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="3. RecyclerView + Adapter (рекомендуемый)"
+        android:layout_marginBottom="16dp"
+        android:textSize="16sp"
+        android:backgroundTint="@android:color/holo_green_light" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Проблемы первых двух подходов:\n• Неэффективное использование памяти\n• Медленная прокрутка при большом количестве элементов\n• Сложность анимаций\n• Нет автоматической оптимизации"
+        android:textSize="14sp"
+        android:background="#FFF3CD"
+        android:padding="12dp"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

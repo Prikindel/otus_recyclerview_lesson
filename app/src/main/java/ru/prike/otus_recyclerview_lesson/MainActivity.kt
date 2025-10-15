@@ -1,16 +1,12 @@
 package ru.prike.otus_recyclerview_lesson
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +20,21 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        setupButtons()
+    }
 
+    private fun setupButtons() {
+        findViewById<Button>(R.id.btnLinearLayout).setOnClickListener {
+            startActivity(Intent(this, LinearLayoutActivity::class.java))
+        }
+
+        findViewById<Button>(R.id.btnListView).setOnClickListener {
+            startActivity(Intent(this, ListViewActivity::class.java))
+        }
+
+        findViewById<Button>(R.id.btnRecyclerView).setOnClickListener {
+            // TODO: Добавить RecyclerViewActivity позже
+            // startActivity(Intent(this, RecyclerViewActivity::class.java))
+        }
     }
 }
