@@ -33,8 +33,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnRecyclerView).setOnClickListener {
-            // TODO: Добавить RecyclerViewActivity позже
-            // startActivity(Intent(this, RecyclerViewActivity::class.java))
+             startActivity(Intent(this, RecyclerViewActivity::class.java))
         }
     }
 }
