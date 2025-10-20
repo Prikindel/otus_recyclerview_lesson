@@ -1,37 +1,16 @@
 package ru.prike.otus_recyclerview_lesson
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Collections
 
-class ChatAdapter(
+class ChatDiffAdapter(
     private val listener: Listener
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private var list = emptyList<Item>()
-
-    fun setList(list: List<Item>) {
-        this.list = list.toList()
-        notifyDataSetChanged()
-    }
-
-    fun addItem(item: Item, index: Int) {
-        list = list.toMutableList().apply { add(index, item) }
-        notifyItemInserted(index)
-    }
-
-    fun removeItem(index: Int) {
-        list = list.toMutableList().apply { removeAt(index) }
-        notifyItemRemoved(index)
-    }
-
-    fun replace(from: Int, to: Int) {
-        list = list.toMutableList().apply {
-            add(to, get(from))
-            removeAt(from)
-        }
-        notifyItemMoved(from, to)
-    }
+) : ListAdapter<Item, RecyclerView.ViewHolder>(DiffUtilItem()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -51,23 +30,8 @@ class ChatAdapter(
         }
     }
 
-    fun exchange(startPosition: Int, endPosition: Int) {
-        if (startPosition < endPosition) {
-            for (index in startPosition until endPosition) {
-                Collections.swap(list, index, index + 1)
-            }
-        } else {
-            for (index in endPosition until startPosition) {
-                Collections.swap(list, index, index - 1)
-            }
-        }
-        notifyItemMoved(startPosition, endPosition)
-    }
-
-    override fun getItemCount() = list.size
-
     override fun getItemViewType(position: Int): Int {
-        return when (list[position]) {
+        return when (getItem(position)) {
             is PersonItem -> ViewType.PERSON.id
             is DayItem -> ViewType.DAY.id
             else -> -1
@@ -75,15 +39,43 @@ class ChatAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
-        val item = list[position]
+        val item = getItem(position)
         when (getItemViewType(position)) {
             ViewType.PERSON.id -> (viewHolder as PersonViewHolder).bind(item as PersonItem)
             ViewType.DAY.id -> (viewHolder as DayViewHolder).bind(item as DayItem)
         }
     }
 
-    private enum class ViewType(val id: Int) {
+    fun exchange(from: Int, to: Int) {
+//        if (from < to) {
+//            for (index in from until to) {
+//                Collections.swap(currentList, index, index + 1)
+//            }
+//        } else {
+//            for (index in to until from) {
+//                Collections.swap(currentList, index, index - 1)
+//            }
+//        }
+        notifyItemMoved(from, to)
+        listener.exchange(from, to)
+    }
+
+    enum class ViewType(val id: Int) {
         DAY(R.layout.day_item),
         PERSON(R.layout.person_item)
     }
+}
+
+private class DiffUtilItem : DiffUtil.ItemCallback<Item>() {
+    override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {
+        if (oldItem::class != newItem::class) return false
+
+        return oldItem.id == newItem.id
+    }
+
+    @SuppressLint("DiffUtilEquals")
+    override fun areContentsTheSame(oldItem: Item, newItem: Item): Boolean {
+        return oldItem == newItem
+    }
+
 }
