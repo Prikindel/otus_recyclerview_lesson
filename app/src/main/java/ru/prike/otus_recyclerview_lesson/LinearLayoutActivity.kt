@@ -9,6 +9,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.transition.TransitionManager
 
 class LinearLayoutActivity : AppCompatActivity() {
 
@@ -30,7 +31,7 @@ class LinearLayoutActivity : AppCompatActivity() {
 
     private fun generateTestData() {
         personItems.clear()
-        for (i in 1..1000) {
+        for (i in 1..20) {
             personItems.add(
                 PersonItem(
                     id = i,
@@ -85,10 +86,12 @@ class LinearLayoutActivity : AppCompatActivity() {
 
     private fun removePersonItem(personItem: PersonItem) {
         // Удаляем из списка данных
+        val index = personItems.indexOf(personItem)
         personItems.remove(personItem)
         
         // Пересоздаем весь список (неэффективно!)
-        populateLinearLayout()
+        linearLayoutContainer.removeViewAt(index)
+//        populateLinearLayout()
         
         Toast.makeText(this, "Удален ${personItem.name}", Toast.LENGTH_SHORT).show()
     }
