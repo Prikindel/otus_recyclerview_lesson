@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class RecyclerViewActivity : AppCompatActivity(), ChatListener {
 
-    private val personItems = mutableListOf<PersonItem>()
+    private val personItems = mutableListOf<Item>()
     private val chatAdapter by lazy { ChatAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,15 +25,24 @@ class RecyclerViewActivity : AppCompatActivity(), ChatListener {
 
     private fun generateTestData() {
         personItems.clear()
-        for (i in 1..10000) {
-            personItems.add(
-                PersonItem(
+        for (i in 0..10000) {
+            if (i % 4 == 0) {
+                val dayNumber = i / 4
+                val day = DayItem(
                     id = i,
-                    name = "Пользователь $i",
-                    date = "${i % 24}:${String.format("%02d", i % 60)}",
-                    message = "Это сообщение номер $i для демонстрации работы ListView"
+                    date = "Day $dayNumber"
                 )
-            )
+                personItems.add(day)
+            } else {
+                personItems.add(
+                    PersonItem(
+                        id = i,
+                        name = "Пользователь $i",
+                        date = "${i % 24}:${String.format("%02d", i % 60)}",
+                        message = "Это сообщение номер $i для демонстрации работы ListView"
+                    )
+                )
+            }
         }
     }
 
