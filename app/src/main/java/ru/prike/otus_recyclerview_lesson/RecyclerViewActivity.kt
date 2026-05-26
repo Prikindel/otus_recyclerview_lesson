@@ -4,12 +4,16 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
 class RecyclerViewActivity : AppCompatActivity(), ChatListener {
 
     private val personItems = mutableListOf<Item>()
-    private val chatAdapter by lazy { ChatAdapter(this) }
+//    private val chatAdapter by lazy { ChatAdapter(this) }
+    private val chatAdapter by lazy { ChatDiffAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,9 +22,30 @@ class RecyclerViewActivity : AppCompatActivity(), ChatListener {
         generateTestData()
 
         val rv = findViewById<RecyclerView>(R.id.listView)
+//        rv.addItemDecoration(
+//            DividerItemDecoration(
+//                this,
+//                DividerItemDecoration.VERTICAL
+//            )
+//        )
+//        ===================================================================
+//        rv.addItemDecoration(
+//            DividerItemDecoration(
+//                this,
+//                DividerItemDecoration.VERTICAL
+//            ).apply {
+//                ResourcesCompat.getDrawable(resources, R.drawable.divider, null)
+//                    ?.let(::setDrawable)
+//            }
+//        )
+//        ===================================================================
+        rv.addItemDecoration(CustomDecorator())
+        ItemTouchHelper(ItemTouchHelperCallback()).attachToRecyclerView(rv)
+
+
         rv.adapter = chatAdapter
 
-        chatAdapter.setList(personItems)
+        updateChat()
     }
 
     private fun generateTestData() {
@@ -49,26 +74,41 @@ class RecyclerViewActivity : AppCompatActivity(), ChatListener {
     override fun onItemClick(id: Int) {
         Toast.makeText(this, "Clicked on item with id $id", Toast.LENGTH_SHORT).show()
 
-//        val newId = id + 10000
-//        val person = PersonItem(
-//            id = newId,
-//            name = "Пользователь $newId",
-//            date = "${newId % 24}:${String.format("%02d", newId % 60)}",
-//            message = "Новое сообщение номер $newId"
-//        )
-//        val index = personItems.indexOfFirst { it.id == id } + 1
-//        personItems.add(index, person)
-//        chatAdapter.addItem(person, index)
 
         val index = personItems.indexOfFirst { it.id == id }
-        val newInex = index + 3
-        personItems.add(newInex, personItems.removeAt(index))
-        chatAdapter.replace(index, newInex)
+        when (personItems[index]) {
+            is PersonItem -> {
+                val newInex = index + 3
+                personItems.add(newInex, personItems.removeAt(index))
+
+                if (personItems[newInex] !is PersonItem) return
+                personItems.removeAt(newInex).let { item ->
+                    val newItem = (item as PersonItem).copy(name = "Пользователь ${item.id - 1}")
+                    personItems.add(newInex, newItem)
+                }
+            }
+            is DayItem -> {
+                for (i in index + 1 until personItems.size) {
+                    if (personItems[i] is DayItem) break
+                    else {
+                        val person = personItems[i] as PersonItem
+                        personItems.removeAt(i)
+                        personItems.add(i, person.copy(isHide = !person.isHide))
+                    }
+                }
+            }
+        }
+        updateChat()
     }
 
     override fun onItemDelete(id: Int) {
         val index = personItems.indexOfFirst { it.id == id }
         personItems.removeAt(index)
-        chatAdapter.removeItem(index)
+        updateChat()
+    }
+
+    private fun updateChat() {
+        chatAdapter.submitList(personItems.toList().filter { (it as? PersonItem)?.isHide != true })
+//        chatAdapter.setList(personItems.toList().filter { (it as? PersonItem)?.isHide != true })
     }
 }

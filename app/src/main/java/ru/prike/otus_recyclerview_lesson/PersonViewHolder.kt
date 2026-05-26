@@ -22,6 +22,12 @@ class PersonViewHolder(
     private val deleteView: View by lazy { view.findViewById(R.id.delete) }
 
     fun bind(item: PersonItem) {
+//        if (item.isHide) {
+//            root.visibility = View.GONE
+//            return
+//        } else {
+//            root.visibility = View.VISIBLE
+//        }
         println("bind PersonViewHolder with id ${item.id}")
         name.text = item.name
         message.text = item.message

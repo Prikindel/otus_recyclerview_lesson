@@ -7,6 +7,7 @@ data class PersonItem(
     val name: String,
     val date: String,
     val message: String,
+    val isHide: Boolean = false
 ) : Item
 
 data class DayItem(

@@ -1,47 +1,17 @@
 package ru.prike.otus_recyclerview_lesson
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import java.util.Collections
 
-class ChatAdapter(
+class ChatDiffAdapter(
     private val listener: ChatListener
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private var list = emptyList<Item>()
-
-    fun setList(list: List<Item>) {
-        this.list = list.toList()
-        notifyDataSetChanged()
-    }
-
-    fun addItem(item: Item, index: Int) {
-        list = list.toMutableList().apply { add(index, item) }.toList()
-        notifyItemInserted(index)
-    }
-
-    fun removeItem(index: Int) {
-        list = list.toMutableList().apply { removeAt(index) }.toList()
-        notifyItemRemoved(index)
-    }
-
-    fun replace(from: Int, to: Int) {
-        list = list.toMutableList().apply {
-            add(to, removeAt(from))
-        }
-        notifyItemMoved(from, to)
-    }
+) : ListAdapter<Item, RecyclerView.ViewHolder>(DiffUtilsItem()) {
 
     fun exchange(startPosition: Int, endPosition: Int) {
-        if (startPosition < endPosition) {
-            for (index in startPosition until endPosition) {
-                Collections.swap(list, index, index + 1)
-            }
-        } else {
-            for (index in endPosition until startPosition) {
-                Collections.swap(list, index, index - 1)
-            }
-        }
         notifyItemMoved(startPosition, endPosition)
     }
 
@@ -68,14 +38,15 @@ class ChatAdapter(
         position: Int
     ) {
         val viewType = getItemViewType(position)
+        val item = getItem(position)
         when (viewType) {
-            ViewType.PERSON.id -> (viewHolder as PersonViewHolder).bind(list[position] as PersonItem)
-            ViewType.DAY.id -> (viewHolder as DayViewHolder).bind(list[position] as DayItem)
+            ViewType.PERSON.id -> (viewHolder as PersonViewHolder).bind(item as PersonItem)
+            ViewType.DAY.id -> (viewHolder as DayViewHolder).bind(item as DayItem)
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        val item = list[position]
+        val item = getItem(position)
         return when (item) {
             is PersonItem -> ViewType.PERSON.id
             is DayItem -> ViewType.DAY.id
@@ -83,10 +54,21 @@ class ChatAdapter(
         }
     }
 
-    override fun getItemCount(): Int = list.size
-
-    private enum class ViewType(val id: Int) {
+    enum class ViewType(val id: Int) {
         DAY(R.layout.day_item),
         PERSON(R.layout.person_item)
+    }
+
+    private class DiffUtilsItem : DiffUtil.ItemCallback<Item>() {
+        override fun areItemsTheSame(
+            oldItem: Item,
+            newItem: Item
+        ): Boolean = oldItem.id == newItem.id
+
+        @SuppressLint("DiffUtilEquals")
+        override fun areContentsTheSame(
+            oldItem: Item,
+            newItem: Item
+        ): Boolean = oldItem == newItem
     }
 }
