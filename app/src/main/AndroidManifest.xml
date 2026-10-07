@@ -27,6 +27,9 @@
         <activity
             android:name=".ListViewActivity"
             android:exported="false" />
+        <activity
+            android:name=".RecyclerViewActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
