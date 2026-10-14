@@ -5,7 +5,11 @@ data class PersonItem(
     val name: String,
     val date: String,
     val message: String,
-) : Item
+    val isHide: Boolean = false
+) : Item {
+
+    fun changeVisible() = copy(isHide = !isHide)
+}
 
 data class DayItem(
     override val id: Int,

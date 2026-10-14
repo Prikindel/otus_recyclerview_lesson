@@ -38,7 +38,7 @@ class ChatAdapter(
             ViewType.Day.id -> {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.day_item, parent, false)
-                DayViewHolder(view)
+                DayViewHolder(view, listener)
             }
 
             ViewType.Person.id -> {

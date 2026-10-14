@@ -3,64 +3,111 @@ package ru.prike.otus_recyclerview_lesson
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
 class RecyclerViewActivity : AppCompatActivity(), ChatListener {
 
-    private val personItems = mutableListOf<Item>()
+    private val data = Data
     private val chatAdapter by lazy { ChatAdapter(this) }
+    private val chatDiffAdapter by lazy { ChatDiffAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recycler_view)
 
-        generateTestData()
+        data.generateTestData()
 
         val rv = findViewById<RecyclerView>(R.id.listView)
-        rv.adapter = chatAdapter
+//        rv.addItemDecoration(
+//            DividerItemDecoration(
+//                this,
+//                DividerItemDecoration.VERTICAL
+//            )
+//        )
+//========================================================================================
+//        rv.addItemDecoration(
+//            DividerItemDecoration(
+//                this,
+//                DividerItemDecoration.VERTICAL
+//            ).apply {
+//                ResourcesCompat.getDrawable(resources, R.drawable.divider, null)
+//                    ?.let(::setDrawable)
+//            }
+//        )
+//========================================================================================
+        rv.addItemDecoration(CustomDecorator())
 
-        chatAdapter.setList(personItems.toList())
-    }
+        val itemTouchHelperCallback = ItemTouchHelperCallback(
+            object : ItemTouchHelperCallback.Callback {
 
-    private fun generateTestData() {
-        personItems.clear()
-        for (i in 0..100) {
-            if (i % 4 == 0) {
-                val dayNumber = i / 4
-                val day = DayItem(
-                    id = i,
-                    date = "Day $dayNumber"
-                )
-                personItems.add(day)
-            } else {
-                personItems.add(
-                    PersonItem(
-                        id = i,
-                        name = "Пользователь $i",
-                        date = "${i % 24}:${String.format("%02d", i % 60)}",
-                        message = "Это сообщение номер $i для демонстрации работы ListView"
-                    )
-                )
+                override fun onRemoveItem(position: Int) {
+                    data.removeAtPosition(position)
+                    updateChat()
+                }
+
+                override fun exchange(fromPosition: Int, toPosition: Int) {
+                    data.exchange(fromPosition, toPosition)
+                    updateChat()
+                }
             }
-        }
+        )
+        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rv)
+
+        rv.adapter = chatDiffAdapter
+
+//        chatAdapter.setList(personItems.toList())
+        updateChat()
     }
 
     override fun onItemClick(id: Int) {
-        val personItem = personItems.find { it.id == id } ?: return
+//        val personItem = personItems.find { it.id == id } ?: return
 //        Toast.makeText(this, "Клик по ${personItem.name}", Toast.LENGTH_SHORT).show()
 
-        val index = personItems.indexOfFirst { it.id == id }
-//        personItems.add(index + 1, personItem.copy(id = personItems.maxOf { it.id } + 1))
+//        val index = personItems.indexOfFirst { it.id == id }
+//        if (personItem is PersonItem) {
+////            personItems.add(index + 1, personItem.copy(id = personItems.maxOf { it.id } + 1))
+//            personItems.removeAt(index)
+//            personItems.add(index, personItem.copy(message = "Новое сообщение"))
+//        }
+//        updateChat()
 //        chatAdapter.addItem(personItems.toList(), index + 1)
 
-        personItems.removeAt(index)
-        personItems.add(index + 6, personItem)
+//        personItems.removeAt(index)
+//        personItems.add(index + 6, personItem)
 //        chatAdapter.replace(personItems, index, index + 6)
+//        when (personItem) {
+//            is PersonItem -> {
+//                personItems.removeAt(index)
+//                personItems.add(index, personItem.copy(message = "Новое сообщение"))
+//            }
+//
+//            is DayItem -> {
+//                for (i in index + 1 until personItems.size) {
+//                    if (personItems[i] is DayItem) break
+//                    else {
+//                        val person = personItems[i] as PersonItem
+//                        personItems.removeAt(i)
+//                        personItems.add(i, person.changeVisible())
+//                    }
+//                }
+//            }
+//        }
+
+        data.changeData(id)
+        updateChat()
     }
 
     override fun onItemDelete(id: Int) {
-        val index = personItems.indexOfFirst { it.id == id }
-        personItems.removeAt(index)
+        data.deleteData(id)
+        updateChat()
 //        chatAdapter.removeItem(personItems.toList(), index)
+    }
+
+    private fun updateChat() {
+//        chatDiffAdapter.submitList(personItems.toList().filter { (it as? PersonItem)?.isHide != true })
+        chatDiffAdapter.submitList(data.items)
     }
 }
